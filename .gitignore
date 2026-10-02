@@ -1,0 +1,13 @@
+# Dependencias de React
+node_modules/
+
+# Archivos compilados (Java)
+*.class
+target/
+
+# Archivos temporales (Python)
+__pycache__/
+*.pyc
+
+# Variables de entorno (Base de datos)
+.env
