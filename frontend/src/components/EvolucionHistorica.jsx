@@ -1,21 +1,30 @@
+import { useState, useEffect } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
-// Usamos algunos datos de tu Excel como base de prueba
-const datosHistoricos = [
-  { mes: 'Ene', total: 31779 },
-  { mes: 'Feb', total: 74943 },
-  { mes: 'Mar', total: 14581 }, // Ese mes hubo salidas fuertes según el Excel
-  { mes: 'Abr', total: 48596 },
-  { mes: 'May', total: 80209 },
-  { mes: 'Jun', total: 118019 }
-];
+// Convertidor de número de mes a texto
+const mesesNombres = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
 
 export default function EvolucionHistorica() {
+  const [datosHistoricos, setDatosHistoricos] = useState([]);
+
+  useEffect(() => {
+    fetch('http://localhost:8081/api/historico')
+      .then(res => res.json())
+      .then(data => {
+        // Mapeamos los datos de Java al formato que necesita el gráfico
+        const datosTransformados = data.map(registro => ({
+          mes: mesesNombres[registro.mes - 1], // Restamos 1 porque los arrays empiezan en 0
+          total: registro.saldoTotal
+        }));
+        setDatosHistoricos(datosTransformados);
+      })
+      .catch(error => console.error("Error al cargar histórico:", error));
+  }, []);
+
   return (
     <div style={{ width: '100%', height: '300px', marginTop: '20px' }}>
       <ResponsiveContainer>
         <LineChart data={datosHistoricos} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
-          {/* Grilla punteada para que parezca hoja de carpeta */}
           <CartesianGrid strokeDasharray="3 3" stroke="#ccc" />
           
           <XAxis 
@@ -24,7 +33,7 @@ export default function EvolucionHistorica() {
           />
           <YAxis 
             tick={{ fontFamily: '"Patrick Hand SC", cursive', fontSize: '1.2rem', fill: 'black' }}
-            tickFormatter={(value) => `$${value / 1000}k`} // Formato corto (ej: $74k)
+            tickFormatter={(value) => `$${value / 1000}k`} 
           />
           
           <Tooltip 
@@ -40,7 +49,6 @@ export default function EvolucionHistorica() {
             formatter={(value) => `$${value.toLocaleString('es-AR')}`}
           />
           
-          {/* La línea rústica negra */}
           <Line 
             type="monotone" 
             dataKey="total" 

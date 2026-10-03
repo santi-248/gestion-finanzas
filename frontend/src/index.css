@@ -86,3 +86,11 @@ body {
   font-weight: bold;
   transform: scale(1.05);
 }
+
+.boton-sketch:disabled {
+  background-color: #cccccc;
+  color: #666666;
+  border-color: #999999;
+  cursor: not-allowed;
+  transform: none; /* Evita que haga el saltito si le pasás el mouse mientras guarda */
+}
