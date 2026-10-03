@@ -10,18 +10,27 @@ export default function TablaCuentas() {
       .catch(error => console.error("Error cargando cuentas:", error));
   }, []);
 
-  // Función que llama al nuevo método PUT de Java
   const actualizarSaldo = (id, nuevoSaldo) => {
     fetch(`http://localhost:8081/api/cuentas/${id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ saldoActual: parseFloat(nuevoSaldo) })
     }).then(() => {
-      window.location.reload(); // Recarga rápida para actualizar la torta y los totales
+      window.location.reload(); 
     });
   };
 
-  // Maneja el cambio de números en el input antes de guardar
+  // Nueva función para borrar la cuenta
+  const eliminarCuenta = (id) => {
+    if (window.confirm("¿Estás seguro de que querés eliminar esta cuenta?")) {
+      fetch(`http://localhost:8081/api/cuentas/${id}`, {
+        method: 'DELETE'
+      }).then(() => {
+        window.location.reload();
+      });
+    }
+  };
+
   const handleCambio = (id, valor) => {
     setCuentas(cuentas.map(c => c.id === id ? { ...c, saldoActual: valor } : c));
   };
@@ -50,6 +59,13 @@ export default function TablaCuentas() {
                 onClick={() => actualizarSaldo(cuenta.id, cuenta.saldoActual)}
               >
                 Modificar
+              </button>
+              {/* Nuevo botón de eliminar con la clase CSS roja */}
+              <button 
+                className="boton-eliminar-sketch" 
+                onClick={() => eliminarCuenta(cuenta.id)}
+              >
+                Eliminar
               </button>
             </div>
 

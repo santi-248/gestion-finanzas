@@ -32,4 +32,9 @@ public class CuentaController {
                     return cuentaRepository.save(cuenta);
                 }).orElse(null);
     }
+
+    @DeleteMapping("/{id}")
+    public void eliminarCuenta(@PathVariable Long id) {
+        cuentaRepository.deleteById(id);
+    }
 }

@@ -68,3 +68,21 @@ body {
   padding: 20px;
   background-color: transparent;
 }
+
+.boton-eliminar-sketch {
+  background-color: transparent;
+  border: 2px solid black;
+  border-radius: 4px;
+  padding: 2px 10px;
+  font-size: 1rem;
+  cursor: pointer;
+  color: black;
+  transition: all 0.2s ease-in-out;
+}
+
+.boton-eliminar-sketch:hover {
+  background-color: #e63946; /* El rojo rústico que usamos para la barra */
+  color: black;
+  font-weight: bold;
+  transform: scale(1.05);
+}
