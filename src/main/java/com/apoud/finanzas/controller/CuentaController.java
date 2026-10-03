@@ -23,4 +23,13 @@ public class CuentaController {
     public Cuenta crearCuenta(@RequestBody Cuenta cuenta){
         return cuentaRepository.save(cuenta);
     }
+
+    @PutMapping("/{id}")
+    public Cuenta actualizarSaldo(@PathVariable Long id, @RequestBody Cuenta cuentaActualizada) {
+        return cuentaRepository.findById(id)
+                .map(cuenta -> {
+                    cuenta.setSaldoActual(cuentaActualizada.getSaldoActual());
+                    return cuentaRepository.save(cuenta);
+                }).orElse(null);
+    }
 }
