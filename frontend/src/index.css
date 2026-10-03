@@ -1,0 +1,70 @@
+* {
+  font-family: 'Patrick Hand SC', cursive;
+}
+
+body {
+  background-color: #f9f9f9; /* Un gris muy clarito para simular papel */
+  color: black;
+  margin: 0;
+  padding: 0;
+}
+
+.boton-sketch {
+  background-color: transparent;
+  border: 2px solid black;
+  border-radius: 4px;
+  padding: 10px 20px;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: black;
+  transition: transform 0.1s;
+}
+
+.boton-sketch:hover {
+  background-color: black; /* Relleno negro sólido */
+  color: white; /* Letra en blanco para que resalte */
+  font-weight: bold; /* Letra en negrita */
+  transform: scale(1.05); /* Un pequeño aumento de tamaño sutil */
+}
+
+@keyframes vibracion-lapiz {
+  0% { background-position: 0 0; }
+  100% { background-position: 2px 2px; }
+}
+
+/* Estilos para la barra de navegación */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+  margin-bottom: 30px;
+  border-bottom: 2px solid black; /* La línea separadora de arriba */
+}
+
+.nav-links {
+  display: flex;
+  gap: 30px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  font-size: 1.3rem;
+}
+
+.nav-links li {
+  cursor: pointer;
+  position: relative;
+}
+
+.nav-links li:hover {
+  font-weight: bold;
+}
+
+/* El truco mágico para las cajas dibujadas a mano */
+.caja-sketch {
+  border: 2px solid black;
+  /* Estos números irregulares hacen que las esquinas parezcan hechas a mano */
+  border-radius: 255px 15px 225px 15px/15px 225px 15px 255px; 
+  padding: 20px;
+  background-color: transparent;
+}
