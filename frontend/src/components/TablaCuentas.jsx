@@ -2,33 +2,39 @@ import { useState, useEffect } from 'react';
 
 export default function TablaCuentas() {
   const [cuentas, setCuentas] = useState([]);
-  const [guardando, setGuardando] = useState(false); // Estado para saber si está procesando
+  const [guardando, setGuardando] = useState(false);
 
   useEffect(() => {
     fetch('http://localhost:8081/api/cuentas')
       .then(res => res.json())
-      .then(data => setCuentas(data))
+      .then(data => {
+        const cuentasPreparadas = data.map(c => ({
+          ...c,
+          moneda: 'ARS',
+          montoIngresado: c.saldoActual,
+          cotizacion: 1
+        }));
+        setCuentas(cuentasPreparadas);
+      })
       .catch(error => console.error("Error cargando cuentas:", error));
   }, []);
 
-  // NUEVA FUNCIÓN GLOBAL
   const guardarTodosLosSaldos = () => {
-    setGuardando(true); // Cambiamos el texto del botón
+    setGuardando(true);
     
-    // Armamos un array con todas las peticiones PUT
     const promesas = cuentas.map(cuenta => {
+      const saldoCalculado = parseFloat(cuenta.montoIngresado) * parseFloat(cuenta.cotizacion);
       return fetch(`http://localhost:8081/api/cuentas/${cuenta.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ saldoActual: parseFloat(cuenta.saldoActual) })
+        body: JSON.stringify({ saldoActual: saldoCalculado })
       });
     });
 
-    // Promise.all dispara todas las peticiones juntas y espera a que terminen
     Promise.all(promesas)
       .then(() => {
         setGuardando(false);
-        window.location.reload(); // Mantenemos el atajo por hoy, pronto lo sacamos
+        window.location.reload(); 
       })
       .catch(error => {
         console.error("Error al guardar todo:", error);
@@ -46,8 +52,17 @@ export default function TablaCuentas() {
     }
   };
 
-  const handleCambio = (id, valor) => {
-    setCuentas(cuentas.map(c => c.id === id ? { ...c, saldoActual: valor } : c));
+  const handleCambioFila = (id, campo, valor) => {
+    setCuentas(cuentas.map(c => {
+      if (c.id === id) {
+        const cuentaActualizada = { ...c, [campo]: valor };
+        if (campo === 'moneda' && valor === 'ARS') {
+          cuentaActualizada.cotizacion = 1;
+        }
+        return cuentaActualizada;
+      }
+      return c;
+    }));
   };
 
   return (
@@ -55,40 +70,71 @@ export default function TablaCuentas() {
       <h2 style={{ textAlign: 'center', margin: '0 0 20px 0' }}>Actualizar Saldos</h2>
       
       <div style={{ display: 'flex', flexDirection: 'column', gap: '15px', marginBottom: '20px' }}>
-        {cuentas.map(cuenta => (
-          <div key={cuenta.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '2px dashed black', paddingBottom: '10px' }}>
-            
-            <span style={{ fontSize: '1.3rem', fontWeight: 'bold' }}>{cuenta.nombre}</span>
-            
-            <div style={{ display: 'flex', gap: '10px' }}>
-              <span style={{ fontSize: '1.2rem', alignSelf: 'center' }}>$</span>
-              <input 
-                type="number" 
-                value={cuenta.saldoActual} 
-                onChange={(e) => handleCambio(cuenta.id, e.target.value)}
-                style={{ fontFamily: '"Patrick Hand SC", cursive', fontSize: '1.2rem', width: '120px', border: '2px solid black', borderRadius: '4px', backgroundColor: 'transparent' }}
-              />
-              
-              <button 
-                className="boton-eliminar-sketch" 
-                onClick={() => eliminarCuenta(cuenta.id)}
-              >
-                Eliminar
-              </button>
-            </div>
+        {cuentas.map(cuenta => {
+          const totalEnPesos = (parseFloat(cuenta.montoIngresado || 0) * parseFloat(cuenta.cotizacion || 1)).toLocaleString('es-AR');
 
-          </div>
-        ))}
+          return (
+            <div key={cuenta.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '2px dashed black', paddingBottom: '10px', flexWrap: 'wrap', gap: '10px' }}>
+              
+              <span style={{ fontSize: '1.3rem', fontWeight: 'bold', width: '150px' }}>{cuenta.nombre}</span>
+              
+              <div style={{ display: 'flex', gap: '10px', alignItems: 'center', flex: 1, justifyContent: 'flex-end' }}>
+                
+                <select 
+                  value={cuenta.moneda} 
+                  onChange={(e) => handleCambioFila(cuenta.id, 'moneda', e.target.value)}
+                  style={{ fontFamily: '"Patrick Hand SC", cursive', fontSize: '1rem', padding: '2px 5px', border: '2px solid black', borderRadius: '4px', backgroundColor: 'transparent' }}
+                >
+                  <option value="ARS">ARS</option>
+                  <option value="USD">USD</option>
+                  <option value="OTRO">Otro</option>
+                </select>
+
+                <input 
+                  type="number" 
+                  value={cuenta.montoIngresado} 
+                  onChange={(e) => handleCambioFila(cuenta.id, 'montoIngresado', e.target.value)}
+                  style={{ fontFamily: '"Patrick Hand SC", cursive', fontSize: '1.1rem', width: '100px', border: '2px solid black', borderRadius: '4px', backgroundColor: 'transparent' }}
+                />
+
+                {/* ACÁ ESTÁ LA MAGIA: Metimos la cotización y el total verde dentro del mismo condicional */}
+                {cuenta.moneda !== 'ARS' && (
+                  <>
+                    <span style={{ fontSize: '1rem' }}>x</span>
+                    <input 
+                      type="number" 
+                      placeholder="Cotización"
+                      value={cuenta.cotizacion} 
+                      onChange={(e) => handleCambioFila(cuenta.id, 'cotizacion', e.target.value)}
+                      style={{ fontFamily: '"Patrick Hand SC", cursive', fontSize: '1.1rem', width: '80px', border: '2px solid black', borderRadius: '4px', backgroundColor: 'transparent' }}
+                    />
+                    <span style={{ fontSize: '1.2rem', fontWeight: 'bold', color: '#2a9d8f', minWidth: '120px', textAlign: 'right' }}>
+                      {'=> $'} {totalEnPesos}
+                    </span>
+                  </>
+                )}
+
+                <button 
+                  className="boton-eliminar-sketch" 
+                  onClick={() => eliminarCuenta(cuenta.id)}
+                  style={{ marginLeft: '10px' }}
+                >
+                  Eliminar
+                </button>
+              </div>
+
+            </div>
+          );
+        })}
       </div>
 
-      {/* BOTÓN GLOBAL ABAJO DE LA TABLA */}
       <button 
         className="boton-sketch" 
-        style={{ alignSelf: 'center', padding: '10px 40px', fontSize: '1.2rem'}}
+        style={{ alignSelf: 'center', padding: '10px 40px', fontSize: '1.2rem' }}
         onClick={guardarTodosLosSaldos}
         disabled={guardando}
       >
-        {guardando ? 'GUARDANDO...' : 'GUARDAR CAMBIOS'}
+        {guardando ? 'GUARDANDO...' : 'GUARDAR TODOS LOS CAMBIOS'}
       </button>
 
     </div>
