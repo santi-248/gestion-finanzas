@@ -1,17 +1,24 @@
-export default function Navbar(){
-    return(
-        <nav className = "navbar">
-            <div className = "logo">
-                <h2>ADM</h2>
-            </div>
+import { Link } from 'react-router-dom';
 
-            <ul className = "nav-links">
-                <li>Dashboard</li>
-                <li>Cuentas</li>
-                <li>Presupuesto</li>
-            </ul>
+export default function Navbar() {
+  return (
+    <nav className="navbar">
+      <div className="logo">
+        <Link to="/" style={{ textDecoration: 'none', color: 'black' }}>
+          <h2>ADM</h2>
+        </Link>
+      </div>
+      
+      <ul className="nav-links">
+        <li>
+          <Link to="/" style={{ textDecoration: 'none', color: 'inherit' }}>Dashboard</Link>
+        </li>
+        <li>
+          <Link to="/presupuesto" style={{ textDecoration: 'none', color: 'inherit' }}>Presupuesto</Link>
+        </li>
+      </ul>
 
-            <button className = "boton-sketch">NUEVO GASTO</button>
-        </nav>
-    )
+      <button className="boton-sketch">NUEVO GASTO</button>
+    </nav>
+  )
 }
