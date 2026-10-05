@@ -4,24 +4,29 @@ export default function Presupuesto() {
   const [ingresos, setIngresos] = useState([{ id: 1, nombre: '', moneda: 'ARS', montoOriginal: '', cotizacion: 1 }]);
   const [gastos, setGastos] = useState([{ id: 2, nombre: '', moneda: 'ARS', montoOriginal: '', cotizacion: 1 }]);
   const [inversiones, setInversiones] = useState([{ id: 3, nombre: '', moneda: 'USD', montoOriginal: '', cotizacion: '' }]);
+  
   const [guardando, setGuardando] = useState(false);
+  const [exito, setExito] = useState(false); // <-- Nuevo estado para el mensajito verde
 
-  // AL CARGAR LA PÁGINA: Traemos el presupuesto guardado en la base de datos
-  useEffect(() => {
+  // 1. CREAMOS LA FUNCIÓN ACÁ (fuera del useEffect para poder reutilizarla)
+  const cargarDatos = () => {
     fetch('http://localhost:8081/api/presupuesto')
       .then(res => res.json())
       .then(data => {
-        // Separamos la lista única de Java en las 3 listas de React usando la propiedad "tipo"
         const ing = data.filter(item => item.tipo === 'INGRESO');
         const gas = data.filter(item => item.tipo === 'GASTO');
         const inv = data.filter(item => item.tipo === 'INVERSION');
 
-        // Solo sobreescribimos si hay datos (para no borrar la fila vacía por defecto si es la primera vez)
         if (ing.length > 0) setIngresos(ing);
         if (gas.length > 0) setGastos(gas);
         if (inv.length > 0) setInversiones(inv);
       })
       .catch(error => console.error("Error al cargar presupuesto:", error));
+  };
+
+  // 2. EL USE EFFECT AHORA SOLO LLAMA A LA FUNCIÓN (se ejecuta al abrir la página)
+  useEffect(() => {
+    cargarDatos();
   }, []);
 
   const calcularTotal = (lista) => {
@@ -69,17 +74,13 @@ export default function Presupuesto() {
     setLista(lista.filter(item => item.id !== id));
   };
 
-  // NUEVA FUNCIÓN: Unir todo y guardar
-  // NUEVA FUNCIÓN: Unir todo, limpiar IDs y guardar
   const guardarPresupuesto = () => {
     setGuardando(true);
 
-    // Función auxiliar para limpiar la basura antes de enviar
     const prepararDatos = (lista, tipoAsignado) => {
       return lista
         .filter(item => item.nombre.trim() !== '')
         .map(item => {
-          // Acá está la magia: Desarmamos el objeto, separamos el "id" y nos quedamos solo con el "resto"
           const { id, ...resto } = item; 
           return { ...resto, tipo: tipoAsignado };
         });
@@ -97,12 +98,16 @@ export default function Presupuesto() {
       body: JSON.stringify(presupuestoCompleto)
     })
     .then(res => {
-      // Si Java nos devuelve un error (ej: status 500), frenamos acá
       if (!res.ok) {
         throw new Error("El servidor falló al guardar los datos.");
       }
+      
+      // 3. LA MAGIA AL GUARDAR:
       setGuardando(false);
-      window.location.reload(); 
+      setExito(true);
+      setTimeout(() => setExito(false), 3000); // El botón vuelve a la normalidad en 3 segs
+      
+      cargarDatos(); // <-- Llamamos de nuevo a la base de datos de forma invisible (sin recargar la página)
     })
     .catch(error => {
       console.error("Error al guardar:", error);
@@ -205,14 +210,14 @@ export default function Presupuesto() {
         </p>
       </div>
 
-      {/* BOTÓN CON LA NUEVA FUNCIÓN */}
+      {/* 4. EL BOTÓN AHORA USA EL ESTADO "exito" PARA MOSTRAR EL MENSAJE */}
       <button 
         className="boton-sketch" 
         style={{ alignSelf: 'center', padding: '15px 40px', fontSize: '1.3rem' }}
         onClick={guardarPresupuesto}
-        disabled={guardando}
+        disabled={guardando || exito}
       >
-        {guardando ? 'GUARDANDO...' : 'GUARDAR PRESUPUESTO'}
+        {guardando ? 'GUARDANDO...' : exito ? '¡PRESUPUESTO GUARDADO!' : 'GUARDAR PRESUPUESTO'}
       </button>
 
     </div>

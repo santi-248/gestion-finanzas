@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
 
-export default function TablaCuentas() {
+export default function TablaCuentas({ onGuardado }) {
   const [cuentas, setCuentas] = useState([]);
   const [guardando, setGuardando] = useState(false);
+  const [exito, setExito] = useState(false);
 
   useEffect(() => {
     fetch('http://localhost:8081/api/cuentas')
@@ -32,14 +33,12 @@ export default function TablaCuentas() {
     });
 
     Promise.all(promesas)
-      .then(() => {
-        setGuardando(false);
-        window.location.reload(); 
-      })
-      .catch(error => {
-        console.error("Error al guardar todo:", error);
-        setGuardando(false);
-      });
+   .then(() => {
+     setGuardando(false);
+     setExito(true);
+     setTimeout(() => setExito(false), 3000); // El mensaje dura 3 segundos
+     if (onGuardado) onGuardado(); 
+   })
   };
 
   const eliminarCuenta = (id) => {
@@ -47,7 +46,7 @@ export default function TablaCuentas() {
       fetch(`http://localhost:8081/api/cuentas/${id}`, {
         method: 'DELETE'
       }).then(() => {
-        window.location.reload();
+        if (onGuardado) onGuardado();
       });
     }
   };
@@ -129,13 +128,13 @@ export default function TablaCuentas() {
       </div>
 
       <button 
-        className="boton-sketch" 
-        style={{ alignSelf: 'center', padding: '10px 40px', fontSize: '1.2rem' }}
-        onClick={guardarTodosLosSaldos}
-        disabled={guardando}
-      >
-        {guardando ? 'GUARDANDO...' : 'GUARDAR TODOS LOS CAMBIOS'}
-      </button>
+     className="boton-sketch" 
+     style={{ alignSelf: 'center', padding: '10px 40px', fontSize: '1.2rem' }}
+     onClick={guardarTodosLosSaldos}
+     disabled={guardando || exito}
+   >
+     {guardando ? 'GUARDANDO...' : exito ? '¡CAMBIOS GUARDADOS!' : 'GUARDAR TODOS LOS CAMBIOS'}
+   </button>
 
     </div>
   );

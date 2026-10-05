@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-export default function FormularioCuenta() {
+export default function FormularioCuenta({ onGuardado }) {
   const [nombre, setNombre] = useState('');
   const [tipo, setTipo] = useState('Billetera Virtual');
 
@@ -33,7 +33,7 @@ export default function FormularioCuenta() {
       setMontoOriginal('');
       setMoneda('ARS');
       setCotizacion(1);
-      window.location.reload(); 
+      if (onGuardado) onGuardado();
     })
     .catch(error => console.error('Error al guardar:', error));
   };

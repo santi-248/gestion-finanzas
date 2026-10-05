@@ -1,27 +1,43 @@
 import { useState, useEffect } from 'react';
 
 export default function ResumenFinanciero() {
-  const [objetivoAnual, setObjetivoAnual] = useState(200000);
-  const [editando, setEditando] = useState(false);
-  const [inputValor, setInputValor] = useState(200000);
+  // Inicializamos el objetivo leyendo la memoria del navegador (si no hay nada, arranca en 200.000)
+  const [objetivoAnual, setObjetivoAnual] = useState(() => {
+    const guardado = localStorage.getItem('objetivoAnual');
+    return guardado ? Number(guardado) : 200000;
+  });
   
-  // Nuevo estado para guardar el total real que viene de la base de datos
+  const [editando, setEditando] = useState(false);
+  const [inputValor, setInputValor] = useState(objetivoAnual);
+  
   const [saldoActual, setSaldoActual] = useState(0);
+  const [saldoUltimoMes, setSaldoUltimoMes] = useState(0); // Nuevo estado
 
-  // Traemos las cuentas y sumamos el total ni bien carga el componente
   useEffect(() => {
+    // 1. Buscamos el saldo actual en vivo
     fetch('http://localhost:8081/api/cuentas')
       .then(res => res.json())
       .then(data => {
-        // La función reduce suma el 'saldoActual' de cada cuenta en el 'acumulador'
         const total = data.reduce((acumulador, cuenta) => acumulador + cuenta.saldoActual, 0);
         setSaldoActual(total);
       })
       .catch(error => console.error("Error al calcular el saldo total:", error));
+
+    // 2. Buscamos el historial para ver cuánto tenías el mes pasado
+    fetch('http://localhost:8081/api/historico')
+      .then(res => res.json())
+      .then(data => {
+        if (data.length > 0) {
+          // Tomamos el último registro guardado en la base de datos
+          const ultimoRegistro = data[data.length - 1];
+          setSaldoUltimoMes(ultimoRegistro.saldoTotal);
+        }
+      })
+      .catch(error => console.error("Error al cargar historial:", error));
   }, []);
 
-  // Dejamos el beneficio fijo por ahora, hasta que conectemos la tabla histórica
-  const beneficioMensual = 44528;
+  // ¡La matemática en acción!
+  const beneficioMensual = saldoActual - saldoUltimoMes;
 
   const porcentaje = Math.min((saldoActual / objetivoAnual) * 100, 100).toFixed(1);
 
@@ -34,7 +50,10 @@ export default function ResumenFinanciero() {
   const colorActual = obtenerColorDeProgreso(porcentaje);
 
   const guardarNuevoObjetivo = () => {
-    setObjetivoAnual(Number(inputValor));
+    const nuevoValor = Number(inputValor);
+    setObjetivoAnual(nuevoValor);
+    // Guardamos en la memoria del navegador para que sobreviva al F5
+    localStorage.setItem('objetivoAnual', nuevoValor);
     setEditando(false);
   };
 
@@ -42,10 +61,11 @@ export default function ResumenFinanciero() {
     <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', width: '100%' }}>
       
       <div style={{ border: '2px solid black', borderRadius: '15px 225px 15px 255px/255px 15px 225px 15px', padding: '15px', textAlign: 'center' }}>
-        <h3 style={{ margin: '0 0 10px 0' }}>Beneficio del Mes</h3>
+        <h3 style={{ margin: '0 0 10px 0' }}>Rendimiento del Mes</h3>
         <p style={{ margin: 0, fontSize: '2rem', fontWeight: 'bold', color: beneficioMensual >= 0 ? '#2a9d8f' : '#e63946' }}>
           {beneficioMensual >= 0 ? '+' : '-'}${Math.abs(beneficioMensual).toLocaleString('es-AR')}
         </p>
+        <span style={{ fontSize: '0.9rem', color: '#666' }}>vs. último cierre</span>
       </div>
 
       <div style={{ border: '2px solid black', borderRadius: '225px 15px 255px 15px/15px 255px 15px 225px', padding: '15px' }}>
