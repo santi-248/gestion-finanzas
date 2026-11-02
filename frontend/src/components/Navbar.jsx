@@ -11,7 +11,10 @@ export default function Navbar() {
       
       <ul className="nav-links">
         <li>
-          <Link to="/" style={{ textDecoration: 'none', color: 'inherit' }}>Dashboard</Link>
+          <Link to="/" style={{ textDecoration: 'none', color: 'inherit' }}>Inicio</Link>
+        </li>
+        <li>
+          <Link to="/dashboard" style={{ textDecoration: 'none', color: 'inherit' }}>Dashboard</Link>
         </li>
         <li>
           <Link to="/presupuesto" style={{ textDecoration: 'none', color: 'inherit' }}>Presupuesto</Link>
