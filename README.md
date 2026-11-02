@@ -50,10 +50,3 @@ El sistema está diseñado bajo una arquitectura cliente-servidor desacoplada:
    * Registro e inicio de sesión de usuarios con aislamiento de datos por cuenta.
 
 ---
-
-## 🛠️ Instalación y Ejecución Local
-
-### 1. Base de Datos (MySQL)
-Crear la base de datos vacía en MySQL:
-```sql
-CREATE DATABASE finanzas_db;
