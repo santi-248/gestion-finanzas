@@ -12,30 +12,42 @@ public class Usuario implements UserDetails {
 
     @Id 
     @GeneratedValue (strategy = GenerationType.IDENTITY)
-
     private Long id;
+    
     private String nombre;
 
     @Column (unique = true, nullable = false)
     private String email;
     
-    @Column(nullable = false)
+    // CAMBIO 1: nullable = true para que los usuarios de Google no necesiten contraseña
+    @Column(nullable = true)
     private String password;
+
+    // CAMBIO 2: Agregamos el identificador de Google
+    @Column(name = "google_id", unique = true, nullable = true)
+    private String googleId;
 
     public Usuario() {
     }
 
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
+    
     public String getNombre() { return nombre; }
     public void setNombre(String nombre) { this.nombre = nombre; }
+    
     public String getEmail() { return email; }
     public void setEmail(String email) { this.email = email; }
+    
     public void setPassword(String password) { this.password = password; }
+
+    // GETTER Y SETTER de Google
+    public String getGoogleId() { return googleId; }
+    public void setGoogleId(String googleId) { this.googleId = googleId; }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(); // Por ahora no usaremos roles (Admin/User), todos son usuarios normales.
+        return List.of(); 
     }
 
     @Override
@@ -45,7 +57,7 @@ public class Usuario implements UserDetails {
 
     @Override
     public String getUsername() {
-        return email; // Usamos el email como identificador principal para el login
+        return email; 
     }
 
     @Override
