@@ -40,6 +40,124 @@ body {
   padding: 10px 20px;
   margin-bottom: 30px;
   border-bottom: 2px solid black; /* La línea separadora de arriba */
+  position: relative;
+  z-index: 20;
+}
+
+.menu-usuario {
+  position: relative;
+}
+
+.menu-usuario-boton {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.menu-usuario-sketch .menu-usuario-boton {
+  background: transparent;
+  border: 2px solid black;
+  color: black;
+  font-size: 1.4rem;
+}
+
+.menu-usuario-sketch .menu-usuario-boton:hover {
+  background: black;
+  color: white;
+}
+
+.menu-usuario-landing .menu-usuario-boton {
+  font-family: Inter, sans-serif;
+  background: #000000;
+  color: #ffffff;
+  border: none;
+  font-size: 0.95rem;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+}
+
+.menu-usuario-landing .menu-usuario-boton:hover {
+  background: #1a1a1a;
+}
+
+.menu-usuario-panel {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  min-width: 230px;
+  padding: 14px;
+  background: #f9f9f9;
+  border: 2px solid black;
+  border-radius: 16px 8px 18px 8px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+  text-align: left;
+  z-index: 30;
+}
+
+.menu-usuario-landing .menu-usuario-panel {
+  font-family: Inter, sans-serif;
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 12px;
+}
+
+.menu-usuario-etiqueta {
+  margin: 0 0 4px 0;
+  font-size: 0.85rem;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  color: #666666;
+}
+
+.menu-usuario-email {
+  margin: 0 0 12px 0;
+  font-size: 1rem;
+  word-break: break-word;
+}
+
+.menu-usuario-salir,
+.landing-nav-mobile-logout {
+  width: 100%;
+  cursor: pointer;
+  border: 2px solid black;
+  border-radius: 8px;
+  background: transparent;
+  padding: 8px 12px;
+  font-size: 1rem;
+}
+
+.menu-usuario-landing .menu-usuario-salir,
+.landing-nav-mobile-logout {
+  font-family: Inter, sans-serif;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+}
+
+.menu-usuario-salir:hover,
+.landing-nav-mobile-logout:hover {
+  background: black;
+  color: white;
+}
+
+.landing-nav-mobile-session {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.landing-nav-mobile-email {
+  margin: 0;
+  font-family: Inter, sans-serif;
+  font-size: 0.95rem;
+  font-weight: 600;
+  word-break: break-word;
 }
 
 .nav-links {

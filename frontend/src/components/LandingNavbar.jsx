@@ -1,9 +1,13 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
+import MenuUsuario from './MenuUsuario';
 
 export default function LandingNavbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { autenticado, usuario, cerrarSesion } = useAuth();
+  const navigate = useNavigate();
 
   const navLinks = [
     { label: 'INICIO', to: '/', isRoute: true },
@@ -15,6 +19,12 @@ export default function LandingNavbar() {
 
   const toggleMobileMenu = () => {
     setMobileMenuOpen((prev) => !prev);
+  };
+
+  const salir = () => {
+    cerrarSesion();
+    setMobileMenuOpen(false);
+    navigate('/');
   };
 
   return (
@@ -53,12 +63,18 @@ export default function LandingNavbar() {
 
         {/* Right Auth / Action Buttons */}
         <div className="landing-nav-actions">
-          <Link to="/dashboard" className="landing-nav-login" aria-label="Iniciar sesión">
-            LOGIN
-          </Link>
-          <Link to="/dashboard" className="landing-nav-signup" aria-label="Registrarse en ADM Finanzas">
-            SIGN UP
-          </Link>
+          {autenticado ? (
+            <MenuUsuario variante="landing" />
+          ) : (
+            <>
+              <Link to="/login" className="landing-nav-login" aria-label="Iniciar sesión">
+                LOGIN
+              </Link>
+              <Link to="/login" className="landing-nav-signup" aria-label="Registrarse en ADM Finanzas">
+                SIGN UP
+              </Link>
+            </>
+          )}
 
           {/* Mobile Menu Hamburger Toggle */}
           <button
@@ -99,24 +115,35 @@ export default function LandingNavbar() {
               </li>
             ))}
             <li className="landing-nav-mobile-divider" />
-            <li>
-              <Link
-                to="/dashboard"
-                className="landing-nav-mobile-link landing-nav-mobile-login"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                LOGIN
-              </Link>
-            </li>
-            <li>
-              <Link
-                to="/dashboard"
-                className="landing-nav-mobile-signup"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                SIGN UP
-              </Link>
-            </li>
+            {autenticado ? (
+              <li className="landing-nav-mobile-session">
+                <p className="landing-nav-mobile-email">{usuario}</p>
+                <button type="button" className="landing-nav-mobile-logout" onClick={salir}>
+                  Cerrar sesión
+                </button>
+              </li>
+            ) : (
+              <>
+                <li>
+                  <Link
+                    to="/login"
+                    className="landing-nav-mobile-link landing-nav-mobile-login"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    LOGIN
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    to="/login"
+                    className="landing-nav-mobile-signup"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    SIGN UP
+                  </Link>
+                </li>
+              </>
+            )}
           </ul>
         </div>
       )}

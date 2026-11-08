@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import api from '../api/axiosConfig';
 
 export default function ResumenFinanciero() {
   // Inicializamos el objetivo leyendo la memoria del navegador (si no hay nada, arranca en 200.000)
@@ -15,18 +16,16 @@ export default function ResumenFinanciero() {
 
   useEffect(() => {
     // 1. Buscamos el saldo actual en vivo
-    fetch('http://localhost:8081/api/cuentas')
-      .then(res => res.json())
-      .then(data => {
+    api.get('/cuentas')
+      .then(({ data }) => {
         const total = data.reduce((acumulador, cuenta) => acumulador + cuenta.saldoActual, 0);
         setSaldoActual(total);
       })
       .catch(error => console.error("Error al calcular el saldo total:", error));
 
     // 2. Buscamos el historial para ver cuánto tenías el mes pasado
-    fetch('http://localhost:8081/api/historico')
-      .then(res => res.json())
-      .then(data => {
+    api.get('/historico')
+      .then(({ data }) => {
         if (data.length > 0) {
           // Tomamos el último registro guardado en la base de datos
           const ultimoRegistro = data[data.length - 1];

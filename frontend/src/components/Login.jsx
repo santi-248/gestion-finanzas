@@ -1,10 +1,12 @@
-import { useNavigate } from 'react-router-dom';
+import { Navigate, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import { GoogleLogin } from '@react-oauth/google';
 import api from '../api/axiosConfig';
+import { useAuth } from '../context/AuthContext';
 
 const Login = () => {
     const [mensaje, setMensaje] = useState('');
+    const { autenticado, iniciarSesion } = useAuth();
 
     const navigate = useNavigate();
 
@@ -19,9 +21,7 @@ const Login = () => {
             const jwtToken = response.data.token;
             const email = response.data.email;
 
-            // 3. Guardamos el token en el navegador (el interceptor lo usará automáticamente)
-            localStorage.setItem('token', jwtToken);
-            localStorage.setItem('usuario', email);
+            iniciarSesion(jwtToken, email);
 
             setMensaje(`¡Bienvenido ${email}! Login exitoso.`);
 
@@ -32,6 +32,10 @@ const Login = () => {
             setMensaje('Error al intentar iniciar sesión en el servidor.');
         }
     };
+
+    if (autenticado) {
+        return <Navigate to="/dashboard" replace />;
+    }
 
     return (
         <div style={styles.container}>

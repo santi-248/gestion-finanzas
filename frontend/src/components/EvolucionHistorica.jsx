@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import api from '../api/axiosConfig';
 
 // Convertidor de número de mes a texto
 const mesesNombres = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
@@ -8,9 +9,8 @@ export default function EvolucionHistorica() {
   const [datosHistoricos, setDatosHistoricos] = useState([]);
 
   useEffect(() => {
-    fetch('http://localhost:8081/api/historico')
-      .then(res => res.json())
-      .then(data => {
+    api.get('/historico')
+      .then(({ data }) => {
         // Mapeamos los datos de Java al formato que necesita el gráfico
         const datosTransformados = data.map(registro => ({
           mes: mesesNombres[registro.mes - 1], // Restamos 1 porque los arrays empiezan en 0

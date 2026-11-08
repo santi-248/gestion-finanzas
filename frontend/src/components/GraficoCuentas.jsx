@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend } from 'recharts';
+import api from '../api/axiosConfig';
 
 const COLORES = ['#1a1a1a', '#4d4d4d', '#808080', '#b3b3b3', '#e6e6e6'];
 
@@ -9,9 +10,8 @@ export default function GraficoCuentas() {
 
   // useEffect se ejecuta una sola vez cuando el componente se muestra en pantalla
   useEffect(() => {
-    fetch('http://localhost:8081/api/cuentas')
-      .then(response => response.json())
-      .then(data => {
+    api.get('/cuentas')
+      .then(({ data }) => {
         // Mapeamos los datos de la base de datos (saldoActual) al formato que espera el gráfico (valor)
         const datosTransformados = data.map(cuenta => ({
           nombre: cuenta.nombre,

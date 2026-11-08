@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import MenuUsuario from './MenuUsuario';
 
 export default function Navbar() {
   return (
@@ -21,7 +22,7 @@ export default function Navbar() {
         </li>
       </ul>
 
-      <button className="boton-sketch">NUEVO GASTO</button>
+      <MenuUsuario variante="sketch" />
     </nav>
   )
 }

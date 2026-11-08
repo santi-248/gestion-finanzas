@@ -25,4 +25,23 @@ api.interceptors.request.use(
     }
 );
 
+api.interceptors.response.use(
+    (response) => response,
+    (error) => {
+        const status = error.response?.status;
+        const url = error.config?.url || '';
+        const esLogin = url.includes('/auth/');
+
+        if (status === 401 && !esLogin) {
+            localStorage.removeItem('token');
+            localStorage.removeItem('usuario');
+            if (window.location.pathname !== '/login') {
+                window.location.assign('/login');
+            }
+        }
+
+        return Promise.reject(error);
+    }
+);
+
 export default api;

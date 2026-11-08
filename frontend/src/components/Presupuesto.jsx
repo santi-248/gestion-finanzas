@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import api from '../api/axiosConfig';
 
 export default function Presupuesto() {
   const [ingresos, setIngresos] = useState([{ id: 1, nombre: '', moneda: 'ARS', montoOriginal: '', cotizacion: 1 }]);
@@ -10,9 +11,8 @@ export default function Presupuesto() {
 
   // 1. CREAMOS LA FUNCIÓN ACÁ (fuera del useEffect para poder reutilizarla)
   const cargarDatos = () => {
-    fetch('http://localhost:8081/api/presupuesto')
-      .then(res => res.json())
-      .then(data => {
+    api.get('/presupuesto')
+      .then(({ data }) => {
         const ing = data.filter(item => item.tipo === 'INGRESO');
         const gas = data.filter(item => item.tipo === 'GASTO');
         const inv = data.filter(item => item.tipo === 'INVERSION');
@@ -92,16 +92,8 @@ export default function Presupuesto() {
 
     const presupuestoCompleto = [...ingresosListos, ...gastosListos, ...inversionesListos];
 
-    fetch('http://localhost:8081/api/presupuesto/guardar-todo', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(presupuestoCompleto)
-    })
-    .then(res => {
-      if (!res.ok) {
-        throw new Error("El servidor falló al guardar los datos.");
-      }
-      
+    api.post('/presupuesto/guardar-todo', presupuestoCompleto)
+    .then(() => { 
       // 3. LA MAGIA AL GUARDAR:
       setGuardando(false);
       setExito(true);

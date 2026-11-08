@@ -52,7 +52,7 @@ export default function LandingPage() {
           </p>
 
           {/* Compound Pill CTA Button */}
-          <Link to="/dashboard" className="landing-cta" id="cta-get-started" aria-label="Comenzar con la gestión de finanzas">
+          <Link to="/login" className="landing-cta" id="cta-get-started" aria-label="Comenzar con la gestión de finanzas">
             <span className="landing-cta-text">Comenzar</span>
             <span className="landing-cta-icon-box">
               <ArrowDownRight size={22} strokeWidth={2.5} />

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import api from '../api/axiosConfig';
 
 export default function FormularioCuenta({ onGuardado }) {
   const [nombre, setNombre] = useState('');
@@ -21,12 +22,7 @@ export default function FormularioCuenta({ onGuardado }) {
       saldoActual: saldoCalculado // Mandamos el total convertido a Java
     };
 
-    fetch('http://localhost:8081/api/cuentas', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(nuevaCuenta),
-    })
-    .then(response => response.json())
+    api.post('/cuentas', nuevaCuenta)
     .then(() => {
       // Limpiamos todo
       setNombre('');

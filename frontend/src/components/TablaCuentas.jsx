@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import api from '../api/axiosConfig';
 
 export default function TablaCuentas({ onGuardado }) {
   const [cuentas, setCuentas] = useState([]);
@@ -6,9 +7,8 @@ export default function TablaCuentas({ onGuardado }) {
   const [exito, setExito] = useState(false);
 
   useEffect(() => {
-    fetch('http://localhost:8081/api/cuentas')
-      .then(res => res.json())
-      .then(data => {
+    api.get('/cuentas')
+      .then(({ data }) => {
         const cuentasPreparadas = data.map(c => ({
           ...c,
           moneda: 'ARS',
@@ -25,11 +25,7 @@ export default function TablaCuentas({ onGuardado }) {
     
     const promesas = cuentas.map(cuenta => {
       const saldoCalculado = parseFloat(cuenta.montoIngresado) * parseFloat(cuenta.cotizacion);
-      return fetch(`http://localhost:8081/api/cuentas/${cuenta.id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ saldoActual: saldoCalculado })
-      });
+      return api.put(`/cuentas/${cuenta.id}`, { saldoActual: saldoCalculado });
     });
 
     Promise.all(promesas)
@@ -43,9 +39,7 @@ export default function TablaCuentas({ onGuardado }) {
 
   const eliminarCuenta = (id) => {
     if (window.confirm("¿Estás seguro de que querés eliminar esta cuenta?")) {
-      fetch(`http://localhost:8081/api/cuentas/${id}`, {
-        method: 'DELETE'
-      }).then(() => {
+      api.delete(`/cuentas/${id}`).then(() => {
         if (onGuardado) onGuardado();
       });
     }
