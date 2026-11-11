@@ -33,8 +33,8 @@ public class AuthController {
     @Value("${GOOGLE_CLIENT_ID}")
     private String googleClientId;
 
-    public AuthController(UsuarioRepository usuarioRepository, PasswordEncoder passwordEncoder, 
-                          JwtService jwtService, AuthenticationManager authenticationManager) {
+    public AuthController(UsuarioRepository usuarioRepository, PasswordEncoder passwordEncoder,
+            JwtService jwtService, AuthenticationManager authenticationManager) {
         this.usuarioRepository = usuarioRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtService = jwtService;
@@ -51,29 +51,29 @@ public class AuthController {
         usuario.setNombre(request.getNombre());
         usuario.setEmail(request.getEmail());
         usuario.setPassword(passwordEncoder.encode(request.getPassword())); // Encriptamos la clave
-        
+
         usuarioRepository.save(usuario);
         String token = jwtService.generateToken(usuario);
-        
+
         return ResponseEntity.ok(new AuthResponse(token, usuario.getEmail()));
     }
 
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(@RequestBody LoginRequest request) {
         authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
-        );
-        
+                new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
+
         Usuario usuario = usuarioRepository.findByEmail(request.getEmail()).orElseThrow();
         String token = jwtService.generateToken(usuario);
-        
+
         return ResponseEntity.ok(new AuthResponse(token, usuario.getEmail()));
     }
 
     @PostMapping("/google")
     public ResponseEntity<AuthResponse> googleLogin(@RequestBody GoogleLoginRequest request) {
         try {
-            GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(new NetHttpTransport(), new GsonFactory())
+            GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(new NetHttpTransport(),
+                    new GsonFactory())
                     .setAudience(Collections.singletonList(googleClientId))
                     .build();
 
@@ -109,6 +109,7 @@ public class AuthController {
                 return ResponseEntity.status(401).build(); // Token de Google inválido
             }
         } catch (Exception e) {
+            e.printStackTrace();
             return ResponseEntity.status(500).build();
         }
     }

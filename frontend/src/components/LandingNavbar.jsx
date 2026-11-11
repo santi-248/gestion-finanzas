@@ -66,14 +66,9 @@ export default function LandingNavbar() {
           {autenticado ? (
             <MenuUsuario variante="landing" />
           ) : (
-            <>
-              <Link to="/login" className="landing-nav-login" aria-label="Iniciar sesión">
-                LOGIN
-              </Link>
-              <Link to="/login" className="landing-nav-signup" aria-label="Registrarse en ADM Finanzas">
-                SIGN UP
-              </Link>
-            </>
+            <Link to="/login" className="landing-nav-ingresar" aria-label="Ingresar a ADM Finanzas">
+              COMENZAR
+            </Link>
           )}
 
           {/* Mobile Menu Hamburger Toggle */}
@@ -116,33 +111,25 @@ export default function LandingNavbar() {
             ))}
             <li className="landing-nav-mobile-divider" />
             {autenticado ? (
-              <li className="landing-nav-mobile-session">
-                <p className="landing-nav-mobile-email">{usuario}</p>
-                <button type="button" className="landing-nav-mobile-logout" onClick={salir}>
-                  Cerrar sesión
+              <li>
+                <button
+                  type="button"
+                  className="landing-nav-mobile-link"
+                  onClick={salir}
+                >
+                  CERRAR SESIÓN
                 </button>
               </li>
             ) : (
-              <>
-                <li>
-                  <Link
-                    to="/login"
-                    className="landing-nav-mobile-link landing-nav-mobile-login"
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
-                    LOGIN
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    to="/login"
-                    className="landing-nav-mobile-signup"
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
-                    SIGN UP
-                  </Link>
-                </li>
-              </>
+              <li>
+                <Link
+                  to="/login"
+                  className="landing-nav-mobile-ingresar"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  COMENZAR
+                </Link>
+              </li>
             )}
           </ul>
         </div>
