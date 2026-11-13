@@ -18,7 +18,7 @@ const mapearRegistro = (registro) => ({
 const ordenarPorFecha = (datos) =>
   [...datos].sort((a, b) => (a.anio - b.anio) || (a.mesNumero - b.mesNumero));
 
-export default function EvolucionHistorica() {
+export default function EvolucionHistorica({ currentBalance = 0 }) {
   const [datosHistoricos, setDatosHistoricos] = useState([]);
   const [cargando, setCargando] = useState(true);
 
@@ -48,7 +48,8 @@ export default function EvolucionHistorica() {
   const abrirModal = () => {
     setMes('');
     setAnio(new Date().getFullYear());
-    setMonto('');
+    // Prellenamos el monto con el saldo actual, pero el usuario puede editarlo
+    setMonto(currentBalance ?? '');
     setError('');
     setModalAbierto(true);
   };
@@ -214,6 +215,9 @@ export default function EvolucionHistorica() {
                   required
                   style={{ fontFamily: '"Patrick Hand SC", cursive', fontSize: '1.2rem', padding: '5px 10px', border: '2px solid black', borderRadius: '4px', backgroundColor: 'transparent' }}
                 />
+                <span style={{ fontSize: '0.95rem', color: '#666' }}>
+                  Calculated current balance: ${Number(currentBalance ?? 0).toLocaleString('es-AR')}
+                </span>
               </label>
 
               {error && (
