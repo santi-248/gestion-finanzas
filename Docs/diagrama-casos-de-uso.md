@@ -1,8 +1,4 @@
 # Diagrama de Casos de Uso UML — Sistema de Gestión de Finanzas (SIG)
-
-> Documento generado automáticamente a partir del análisis de endpoints del backend y componentes del frontend.
-> Última actualización: 19 de noviembre de 2026.
-
 ---
 
 ## Diagrama de Casos de Uso
