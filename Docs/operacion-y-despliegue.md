@@ -1,8 +1,4 @@
 # Guía de Operación y Despliegue Local — Sistema de Gestión de Finanzas (SIG)
-
-> Documento generado automáticamente a partir del análisis de `pom.xml`, `package.json` y archivos de configuración.
-> Última actualización: 19 de noviembre de 2026.
-
 ---
 
 ## 1. Requisitos Previos
